@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forms - DizzyMC Network</title>
+<meta name="description" content="DizzyMC forms: staff applications, ban appeals, player reports and bug reports.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #15131c;
+    --surface: #1e1b28;
+    --surface-2: #262233;
+    --line: #322d42;
+    --text: #e6e3ee;
+    --muted: #9b95ad;
+    --accent: #a64cf0;
+    --accent-dark: #7d33bb;
+    --blue: #4cb8f0;
+    --green: #4fca6c;
+    --red: #e05561;
+    --yellow: #f0c24c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 "Open Sans", Arial, sans-serif; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+  header {
+    background-color: #1b1530;
+    background-image:
+      linear-gradient(rgba(10, 8, 20, .55), rgba(10, 8, 20, .85)),
+      repeating-linear-gradient(0deg, transparent 0 31px, rgba(255,255,255,.035) 31px 32px),
+      repeating-linear-gradient(90deg, transparent 0 31px, rgba(255,255,255,.035) 31px 32px);
+    border-bottom: 4px solid var(--accent-dark);
+  }
+  .head { padding: 30px 16px 26px; text-align: center; }
+  .logo { font-family: "Press Start 2P", monospace; line-height: 1.25; margin: 0; }
+  .logo a { color: inherit; text-decoration: none; }
+  .logo .top { font-size: clamp(22px, 4vw, 38px); text-shadow: 4px 4px 0 #000; }
+  .logo .top .d { color: var(--accent); } .logo .top .m { color: var(--blue); }
+  .logo .bottom { display: block; font-size: clamp(10px, 1.4vw, 13px); color: #fff; letter-spacing: 6px; margin-top: 10px; text-shadow: 2px 2px 0 #000; }
+
+  .nav { background: var(--surface); border-bottom: 1px solid var(--line); }
+  .nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; }
+  .nav a { display: block; padding: 13px 18px; color: var(--text); font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: .4px; }
+  .nav a:hover, .nav a.on { background: var(--surface-2); text-decoration: none; box-shadow: inset 0 -3px 0 var(--accent); }
+
+  main { padding: 28px 16px 40px; }
+  .intro { margin: 0 0 20px; color: var(--muted); }
+  .intro h2 { color: var(--text); margin: 0 0 4px; font-size: 22px; }
+
+  /* form picker */
+  .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .tab { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 14px; cursor: pointer; text-align: left;
+    color: var(--text); font: inherit; transition: border-color .15s, background .15s; }
+  .tab:hover { background: var(--surface-2); }
+  .tab.on { border-color: var(--accent); background: var(--surface-2); box-shadow: inset 0 -3px 0 var(--accent); }
+  .tab .t { font-weight: 700; display: block; }
+  .tab .s { font-size: 13px; color: var(--muted); }
+  .tab .ic { font-size: 20px; display: block; margin-bottom: 4px; }
+
+  .box { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; }
+  .box h3 { margin: 0; padding: 12px 18px; font-size: 14px; text-transform: uppercase; letter-spacing: .5px;
+    border-bottom: 1px solid var(--line); background: var(--surface-2); }
+  .box .in { padding: 18px; }
+
+  /* fields */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .full { grid-column: 1 / -1; }
+  label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+  label .opt { color: var(--muted); font-weight: 400; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  input[type=text], input[type=number], input[type=url], input[type=date], select, textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--line); color: #fff; border-radius: 3px;
+    font: 14px "Open Sans", sans-serif; padding: 9px 11px; }
+  textarea { min-height: 110px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  .bad { border-color: var(--red) !important; }
+
+  /* minecraft account */
+  .account { display: flex; gap: 14px; align-items: center; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 12px; }
+  .account img { width: 64px; height: 64px; image-rendering: pixelated; border-radius: 3px; background: var(--surface-2); flex: none; }
+  .account .fields { flex: 1; min-width: 0; }
+  .account .row { display: flex; gap: 8px; }
+  .account .row input { flex: 1; min-width: 0; }
+  .account button { background: var(--accent-dark); color: #fff; border: 0; border-radius: 3px; padding: 0 14px; font-weight: 700; cursor: pointer; }
+  .account button:hover { background: var(--accent); }
+  .acc-status { font-size: 13px; margin-top: 6px; color: var(--muted); }
+  .acc-status.ok { color: var(--green); } .acc-status.err { color: var(--red); }
+  .check { display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+
+  .submit { margin-top: 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .submit button { background: var(--accent-dark); color: #fff; border: 0; border-radius: 3px; padding: 11px 22px; font-weight: 700; font-size: 15px; cursor: pointer; }
+  .submit button:hover { background: var(--accent); }
+  .submit button:disabled { opacity: .6; cursor: default; }
+  .msg { font-size: 14px; }
+  .msg.ok { color: var(--green); } .msg.err { color: var(--red); }
+  .hp { position: absolute; left: -9999px; }
+  .btn-ticket { display: inline-block; background: #5865f2; color: #fff; font-weight: 700; padding: 11px 22px; border-radius: 3px; }
+  .btn-ticket:hover { text-decoration: none; filter: brightness(1.1); }
+  .btn-copy { background: var(--surface-2); color: #fff; border: 1px solid var(--line); border-radius: 3px; padding: 7px 16px; font-weight: 700; cursor: pointer; }
+
+  .done { text-align: center; padding: 40px 18px; }
+  .done .big { font-size: 40px; }
+  .done h3 { border: 0; background: none; font-size: 20px; text-transform: none; letter-spacing: 0; padding: 6px 0; }
+
+  footer { border-top: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: 13px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 18px 16px; }
+  footer .right { margin-left: auto; display: flex; gap: 16px; }
+  footer a { color: var(--muted); }
+
+  @media (max-width: 860px) {
+    .tabs { grid-template-columns: 1fr 1fr; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head">
+    <h1 class="logo"><a href="/"><span class="top"><span class="d">Dizzy</span><span class="m">MC</span></span><span class="bottom">NETWORK</span></a></h1>
+  </div>
+</header>
+
+<div class="nav">
+  <div class="wrap">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="https://dizzymc.shop" target="_blank" rel="noopener">Store</a></li>
+      <li><a class="on" href="/forms.html">Forms</a></li>
+      <li><a href="/#rules">Rules</a></li>
+      <li><a href="/#join">How to Join</a></li>
+      <li><a href="https://discord.gg/xGGGcFqFyP" target="_blank" rel="noopener">Discord</a></li>
+    </ul>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="intro">
+    <h2>Forms</h2>
+    Pick a form, connect your Minecraft account and fill it in. When you press Submit, your answers are copied so you can paste them into a ticket in our Discord.
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab" data-form="staff"><span class="ic">🛡️</span><span class="t">Staff Application</span><span class="s">Apply to help run DizzyMC</span></button>
+    <button class="tab" data-form="appeal"><span class="ic">⚖️</span><span class="t">Ban Appeal</span><span class="s">Ask to be unbanned</span></button>
+    <button class="tab" data-form="report"><span class="ic">🚩</span><span class="t">Report / Support</span><span class="s">Report a player or get help</span></button>
+    <button class="tab" data-form="bug"><span class="ic">🐛</span><span class="t">Bug / Suggestion</span><span class="s">Report a bug or share an idea</span></button>
+  </div>
+
+  <div class="box" id="form-box">
+    <h3 id="form-title">Staff Application</h3>
+    <div class="in" id="form-in">
+      <form id="form" novalidate>
+        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <label>Minecraft account</label>
+        <div class="account">
+          <img id="avatar" src="https://mc-heads.net/avatar/MHF_Steve/64" alt="">
+          <div class="fields">
+            <div class="row">
+              <input type="text" id="mc" maxlength="20" placeholder="Your Minecraft username" autocomplete="off">
+              <button type="button" id="connect">Connect</button>
+            </div>
+            <label class="check"><input type="checkbox" id="bedrock"> I play on Bedrock (phone, console, Windows)</label>
+            <div class="acc-status" id="acc-status">Type your username and press Connect.</div>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:16px">
+          <div>
+            <label for="discord">Discord username</label>
+            <input type="text" id="discord" maxlength="40" placeholder="e.g. dizzyits">
+            <div class="hint">So staff can reply to you.</div>
+          </div>
+          <div></div>
+        </div>
+
+        <div class="grid" id="fields" style="margin-top:16px"></div>
+
+        <div class="submit">
+          <button type="submit" id="send">Submit &amp; copy</button>
+          <span class="msg" id="msg"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; <span id="year">2026</span> DizzyMC Network</span>
+    <span>Not affiliated with Mojang or Microsoft.</span>
+    <span class="right"><a href="/">Home</a><a href="https://dizzymc.shop" target="_blank" rel="noopener">Store</a><a href="https://discord.gg/xGGGcFqFyP" target="_blank" rel="noopener">Discord</a></span>
+  </div>
+</footer>
+
+<script>
+  // No server behind this site: Submit copies a ticket message and sends the player to #open-a-ticket to paste it.
+  const TICKET_URL = 'https://discord.com/channels/1550256357461205053/1550256359113621649';
+  const DISCORD_INVITE = 'https://discord.gg/xGGGcFqFyP';
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ---------------------------------------------------------------- the four forms
+  // Each field: id, label, type (text/number/url/date/select/textarea), required, options, hint, min (chars), full (whole row)
+  const FORMS = {
+    staff: {
+      title: 'Staff Application', color: 0xa64cf0, emoji: '🛡️',
+      fields: [
+        { id: 'age', label: 'Age', type: 'number', required: true },
+        { id: 'tz', label: 'Timezone', type: 'select', required: true, options: ['EST (US East)', 'CST (US Central)', 'MST (US Mountain)', 'PST (US West)', 'GMT / UK', 'Europe (CET)', 'Asia', 'Australia', 'Other'] },
+        { id: 'hours', label: 'Hours you can play each week', type: 'number', required: true },
+        { id: 'role', label: 'Position', type: 'select', required: true, options: ['Helper', 'Moderator', 'Builder'] },
+        { id: 'exp', label: 'Staff experience', type: 'textarea', required: true, full: true, hint: 'Other servers you helped run, and what you did there. Say "none" if this is your first time.' },
+        { id: 'why', label: 'Why do you want to be staff on DizzyMC?', type: 'textarea', required: true, full: true, min: 80, hint: 'At least 80 characters.' },
+        { id: 'scenario', label: 'A player says someone griefed their base. What do you do?', type: 'textarea', required: true, full: true, min: 40 }
+      ]
+    },
+    appeal: {
+      title: 'Ban Appeal', color: 0xf0c24c, emoji: '⚖️',
+      fields: [
+        { id: 'type', label: 'What happened', type: 'select', required: true, options: ['Banned', 'Muted', 'Kicked / warned', 'Other'] },
+        { id: 'when', label: 'When (roughly)', type: 'date', required: false },
+        { id: 'reason', label: 'Reason you were given', type: 'text', required: true, full: true },
+        { id: 'story', label: 'Your side of the story', type: 'textarea', required: true, full: true, min: 50 },
+        { id: 'why', label: 'Why should we unban you?', type: 'textarea', required: true, full: true, min: 50 }
+      ]
+    },
+    report: {
+      title: 'Report / Support', color: 0xe05561, emoji: '🚩',
+      fields: [
+        { id: 'type', label: 'Type', type: 'select', required: true, options: ['Report a cheater', 'Report griefing / stealing', 'Report chat abuse', 'Lost items / bug cost me something', 'Store purchase problem', 'Other help'] },
+        { id: 'who', label: 'Player you are reporting', type: 'text', required: false, hint: 'Leave empty if this is about something else.' },
+        { id: 'where', label: 'Where / coordinates', type: 'text', required: false, full: true, hint: 'e.g. Overworld 1200, 64, -340' },
+        { id: 'what', label: 'What happened?', type: 'textarea', required: true, full: true, min: 20 },
+        { id: 'proof', label: 'Proof (screenshot or video link)', type: 'url', required: false, full: true, hint: 'Imgur, YouTube, Medal, a Discord image link...' }
+      ]
+    },
+    bug: {
+      title: 'Bug / Suggestion', color: 0x4cb8f0, emoji: '🐛',
+      fields: [
+        { id: 'type', label: 'Type', type: 'select', required: true, options: ['Bug', 'Suggestion'] },
+        { id: 'title', label: 'Short title', type: 'text', required: true, hint: 'e.g. "Crate keys disappear after relog"' },
+        { id: 'details', label: 'Details', type: 'textarea', required: true, full: true, min: 20 },
+        { id: 'steps', label: 'How to make the bug happen (bugs only)', type: 'textarea', required: false, full: true }
+      ]
+    }
+  };
+
+  let current = 'staff';
+  const account = { name: '', uuid: '', bedrock: false, verified: false };
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]); }
+
+  function render(key) {
+    current = key;
+    const f = FORMS[key];
+    document.getElementById('form-title').textContent = f.title;
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.form === key));
+    const box = document.getElementById('fields');
+    box.innerHTML = f.fields.map(fd => {
+      const req = fd.required ? '' : ' <span class="opt">(optional)</span>';
+      let input;
+      if (fd.type === 'textarea') input = `<textarea id="f-${fd.id}" maxlength="1000"></textarea>`;
+      else if (fd.type === 'select') input = `<select id="f-${fd.id}"><option value="">Choose…</option>${fd.options.map(o => `<option>${esc(o)}</option>`).join('')}</select>`;
+      else input = `<input type="${fd.type}" id="f-${fd.id}" maxlength="300"${fd.type === 'number' ? ' min="0" max="99"' : ''}>`;
+      return `<div class="${fd.full ? 'full' : ''}"><label for="f-${fd.id}">${esc(fd.label)}${req}</label>${input}${fd.hint ? `<div class="hint">${esc(fd.hint)}</div>` : ''}</div>`;
+    }).join('');
+    setMsg('', '');
+    history.replaceState(null, '', '#' + key);
+  }
+
+  document.getElementById('tabs').addEventListener('click', e => {
+    const t = e.target.closest('.tab');
+    if (t) render(t.dataset.form);
+  });
+
+  // ---------------------------------------------------------------- connect the Minecraft account
+
+  const mcInput = document.getElementById('mc'), bedrockBox = document.getElementById('bedrock');
+  function setAcc(text, cls) { const el = document.getElementById('acc-status'); el.textContent = text; el.className = 'acc-status ' + (cls || ''); }
+
+  async function connect() {
+    const name = mcInput.value.trim().replace(/^\./, '');
+    account.verified = false;
+    if (!name) { setAcc('Type your username first.', 'err'); return; }
+    account.bedrock = bedrockBox.checked;
+    if (account.bedrock) {
+      // Bedrock (Xbox) names can't be looked up here; trust what they typed.
+      if (!/^[A-Za-z0-9 _]{1,16}$/.test(name)) { setAcc('That doesn\'t look like a Bedrock gamertag.', 'err'); return; }
+      account.name = '.' + name.replace(/ /g, '_'); account.uuid = ''; account.verified = true;
+      document.getElementById('avatar').src = 'https://mc-heads.net/avatar/MHF_Steve/64';
+      setAcc('Connected as ' + account.name + ' (Bedrock).', 'ok');
+      return;
+    }
+    if (!/^[A-Za-z0-9_]{3,16}$/.test(name)) { setAcc('Java usernames are 3-16 letters, numbers or _.', 'err'); return; }
+    setAcc('Checking…');
+    try {
+      const r = await fetch('https://playerdb.co/api/player/minecraft/' + encodeURIComponent(name));
+      const j = await r.json();
+      if (!j.success) { setAcc('No Java account called "' + name + '". On Bedrock? Tick the box above.', 'err'); return; }
+      account.name = j.data.player.username; account.uuid = j.data.player.id; account.verified = true;
+      document.getElementById('avatar').src = 'https://mc-heads.net/avatar/' + account.uuid + '/64';
+      mcInput.value = account.name;
+      setAcc('Connected as ' + account.name + '.', 'ok');
+    } catch (e) {
+      // Lookup service down: still let them continue with what they typed.
+      account.name = name; account.uuid = ''; account.verified = true;
+      document.getElementById('avatar').src = 'https://mc-heads.net/avatar/' + encodeURIComponent(name) + '/64';
+      setAcc('Couldn\'t check right now, but you can still send the form as ' + name + '.', 'ok');
+    }
+  }
+  document.getElementById('connect').addEventListener('click', connect);
+  mcInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); connect(); } });
+  mcInput.addEventListener('input', () => { account.verified = false; setAcc('Press Connect to check your username.'); });
+  bedrockBox.addEventListener('change', () => { account.verified = false; setAcc('Press Connect to check your username.'); });
+
+  // ---------------------------------------------------------------- send
+
+  function setMsg(text, cls) { const m = document.getElementById('msg'); m.textContent = text; m.className = 'msg ' + (cls || ''); }
+  const cut = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
+
+  document.getElementById('form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const f = FORMS[current];
+    if (document.querySelector('.hp').value) return; // bot
+    document.querySelectorAll('.bad').forEach(el => el.classList.remove('bad'));
+    if (!account.verified) { setMsg('Connect your Minecraft account first.', 'err'); mcInput.classList.add('bad'); return; }
+    const discord = document.getElementById('discord').value.trim();
+    if (!discord) { setMsg('Add your Discord username so staff can reply.', 'err'); document.getElementById('discord').classList.add('bad'); return; }
+    const values = {};
+    for (const fd of f.fields) {
+      const el = document.getElementById('f-' + fd.id);
+      const v = el.value.trim();
+      if (fd.required && !v) { setMsg('Please fill in: ' + fd.label, 'err'); el.classList.add('bad'); el.focus(); return; }
+      if (v && fd.min && v.length < fd.min) { setMsg(fd.label + ' needs at least ' + fd.min + ' characters.', 'err'); el.classList.add('bad'); el.focus(); return; }
+      if (fd.type === 'number' && v && (+v < 0 || +v > 99)) { setMsg('Check the number for: ' + fd.label, 'err'); el.classList.add('bad'); return; }
+      values[fd.id] = v;
+    }
+    // Build the ticket message (Discord markdown), well under Discord's 2000 character limit.
+    const lines = [
+      '**' + f.emoji + ' ' + f.title + (values.type ? ' - ' + values.type : '') + '**',
+      '**Minecraft:** ' + account.name + (account.bedrock ? ' (Bedrock)' : ' (Java)'),
+      '**Discord:** ' + discord
+    ];
+    for (const fd of f.fields) {
+      if (fd.id === 'type' || !values[fd.id]) continue;
+      lines.push('**' + fd.label + ':** ' + cut(values[fd.id].replace(/@/g, '@​'), 400)); // no pings
+    }
+    lines.push('-# Sent from dizzymc.net/forms');
+    const ticket = cut(lines.join('\n'), 1900);
+
+    let copied = false;
+    try { await navigator.clipboard.writeText(ticket); copied = true; } catch (err) { }
+
+    document.getElementById('form-in').innerHTML = `<div class="done">
+        <div class="big">📋</div>
+        <h3>Almost done, ${esc(account.name)}!</h3>
+        <p>${copied ? 'Your ' + esc(f.title.toLowerCase()) + ' is <b>copied</b>.' : 'Copy your ' + esc(f.title.toLowerCase()) + ' from the box below.'}
+          Open a ticket in our Discord and <b>paste it</b> (Ctrl+V) so staff can see it.</p>
+        <p style="margin:18px 0"><a class="btn-ticket" href="${TICKET_URL}" target="_blank" rel="noopener">Open #open-a-ticket</a></p>
+        <textarea id="ticket-text" readonly style="min-height:160px;text-align:left">${esc(ticket)}</textarea>
+        <p style="margin-top:10px"><button type="button" class="btn-copy" id="copy-again">Copy again</button></p>
+        <p class="hint">Not in our Discord yet? <a href="${DISCORD_INVITE}" target="_blank" rel="noopener">Join here</a> first.</p>
+        <p><a href="/forms.html">Fill in another form</a> &middot; <a href="/">Back to home</a></p>
+      </div>`;
+    document.getElementById('copy-again').addEventListener('click', async () => {
+      const ta = document.getElementById('ticket-text');
+      try { await navigator.clipboard.writeText(ta.value); } catch (err) { ta.select(); document.execCommand('copy'); }
+      document.getElementById('copy-again').textContent = 'Copied!';
+    });
+  });
+
+  render(FORMS[location.hash.slice(1)] ? location.hash.slice(1) : 'staff');
+</script>
+</body>
+</html>
